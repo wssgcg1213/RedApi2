@@ -12,6 +12,7 @@ var express = require('express');
     apiRoutes = require('./routes/api'),
     panelRoutes = require('./routes/panel'),
     settings = require('./settings'),
+    mongoose = require('mongoose'),
     app = express();
 
 /* EJS */
@@ -43,6 +44,9 @@ app.use(function(req, res, next) {
     next(err);
 });
 app.use(errorHandler);
+
+//Connect MongoDB
+mongoose.connect(settings.dsn);
 
 /* environment settings */
 process.env.PORT = settings.port;

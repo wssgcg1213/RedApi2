@@ -3,10 +3,5 @@
  */
 module.exports = {
   port: 8888,
-  db: {
-      type: "mongodb",
-      username: "wssgcg1213",
-      password: "nottellyou",
-      database: "redapi"
-  }
+  dsn: "mongodb://wssgcg1213:6884650@127.0.0.1:27017/redapi"
 };
