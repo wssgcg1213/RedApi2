@@ -1,9 +1,6 @@
 /**
  * Created by Liuchenling on 9/17/14.
  */
-/**
- * Created by Liuchenling on 9/17/14.
- */
 
 var socketio = require('socket.io');
 var phantom = require('phantom');

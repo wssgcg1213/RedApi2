@@ -3,39 +3,26 @@
  */
 var express = require('express');
     path = require('path'),
-    favicon = require('static-favicon'),
-    logger = require('morgan'),
-    cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    session = require('express-session'),
-    errorHandler = require('./modules/errorHandler'),
-    apiRoutes = require('./routes/api'),
-    panelRoutes = require('./routes/panel'),
+    router = require('./router'),
     settings = require('./settings'),
     mongoose = require('mongoose'),
+    hbs = require('express-hbs'),
     app = express();
 
-/* EJS */
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-/* midwares */
-app.use(favicon());
-app.use(logger('dev'));
-app.use(session({
-    secret: 'hongyanredrock',
-    resave: false,
-    saveUninitialized: true
+/* engine */
+app.engine('hbs', hbs.express4({
+    partialsDir: __dirname + '/views/partials'
 }));
-app.use(bodyParser.json());
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+
+/* midddlewares */
 app.use(bodyParser.urlencoded());
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 /* route */
-app.use('/api', apiRoutes);
-app.use('/panel', panelRoutes)
-
+app.use('/', router);
 
 /* error handler */
 app.use(function(req, res, next) {
@@ -43,10 +30,10 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-app.use(errorHandler);
+//app.use(errorHandler);
 
 //Connect MongoDB
-mongoose.connect(settings.dsn);
+//mongoose.connect(settings.dsn);
 
 /* environment settings */
 process.env.PORT = settings.port;

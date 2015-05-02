@@ -9,7 +9,8 @@
   3. 优化各个 插件, 静态资源buffer化
   4. 升级 express, 优化配制
   5. 增加 logger
+  6. 后台 socket.io 通知
   
-5.1完成.
+放假前完成.
 
 ZeroLing.
