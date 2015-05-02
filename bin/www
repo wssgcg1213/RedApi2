@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 var debug = require('debug')('RedApi2');
 var app = require('../app');
+var http = require('http');
+var ioController = require('../logger').io;
 
 app.set('port', process.env.PORT || 3000);
 
-var server = app.listen(app.get('port'), function() {
+var _server = require('http').Server(app);
+
+var server = _server.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
+
+var io = require('socket.io')(server, {path: "/admin"});
+ioController(io);

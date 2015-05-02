@@ -8,31 +8,32 @@
 // 			-20: 学号输入错误
 // 
 //
-var version = '14.9.11';
-var defaultTerm = '2014-2015学年1学期';
-
 var jsdom = require('jsdom');
 var $ = require('jQuery');
 var http = require('http');
 var Iconv = require('iconv').Iconv;
 var kebiaoModel = require('./model');
 
+var version = '15.05.02';
+var defaultTerm = '2014-2015学年2学期';
 /**
- * 偏函数，返回当前周，必须配置TERM_START变量
- * @returns {number}
+ * mongodb 缓存时间
+ */
+var mongodbExpire = 30 * 24 * 3600 * 1000;
+/**
+ * 每学期修改，开学第一周的星期一的日子，年，月，日，第二个参数0表示一月份。
+ * 以便返回当前周数
+ */
+var TERM_START = new Date(2015, 2, 2); //有坑, 看上面注释
+
+/**
+ * 返回当前周，必须配置TERM_START变量
  */
 function getNowWeek(callback){
-    /**
-     * 每学期修改，开学第一周的星期一的日子，年，月，日，第二个参数0表示一月份。
-     * 以便返回当前周数
-     */
-    var TERM_START = new Date(2014, 8, 8);
     var w = Math.ceil((new Date() - TERM_START)/(1000*3600*24*7));
     callback && callback(w);
     return w;
 }
-
-
 
 var infoHash = {
 	'200': 'Success',
@@ -63,18 +64,13 @@ function kebiaoMain (xh, week, callback) {
 		})
 	
 		res.on('end', function () {
-//		    console.timeEnd('req');
-//			console.time('process');
-			if(res.statusCode != 200) 
-				responseData(-10, function (err, re) {
-					return callback && callback(null, re);
-				});
+			if(res.statusCode != 200) {
+                responseData(-10, function (err, re) {
+                    return callback && callback(null, re);
+                });
+            }
 
-			var buffer = new Buffer(size), pos = 0;
-			for(var i = 0, l = buffers.length; i < l; i++) {
-				buffers[i].copy(buffer, pos);
-				pos += buffers[i].length;
-			}
+			var buffer = Buffer.concat(buffers, size);
 			var gbk_to_utf8_iconv = new Iconv('GBK', 'UTF-8//TRANSLIT//IGNORE');
 	        var utf8_buffer = gbk_to_utf8_iconv.convert(buffer);
 	        var doc = utf8_buffer.toString().replace(/&nbsp;/g, '');
@@ -107,29 +103,28 @@ function kebiaoMain (xh, week, callback) {
                                 return resultData.push(cache);
                             }
                             var c = self.toString().split(/<\w*>/g);
-                            if (!c[0]) return;
-                            var w = parseWeek(c[4]);
+                            if (!c[1]) return;
+                            var w = parseWeek(c[5]);
                             var d = {
                                 hash_day: day,
                                 hash_lesson: course,
                                 begin_lesson: 2 * course + 1,
                                 day: hash_day[day],
                                 lesson: hash_course[course],
-                                course: c[0],
-                                teacher: c[1] && c[1].trim(),
-                                classroom: c[2],
-                                rawWeek: c[4],
+                                course: c[1],
+                                teacher: c[2] && c[2].trim(),
+                                classroom: c[3],
+                                rawWeek: c[5],
                                 weekModel: w.weekModel || 'all',
                                 weekBegin: w.weekBegin || 1,
                                 weekEnd: w.weekEnd || 17,
                                 week: w.week || [],
-                                type: $(c[3])['0'] && $(c[3])['0']._childNodes['0'] && $(c[3])['0']._childNodes['0'].__nodeValue,
-                                status: c[5] && c[5].split('选课状态:')[1]
+                                type: $(c[3])['0'] && $(c[4])['0']._childNodes['0'] && $(c[4])['0']._childNodes['0'].__nodeValue,
+                                status: c[6] && c[6].split('选课状态:')[1]
                             }
                             cache = d;
                         });
                     }
-
                 }
 	        }catch(e){
                 console.log('Parse error: ', e);
@@ -139,7 +134,6 @@ function kebiaoMain (xh, week, callback) {
 	        }
 	        responseData(200, xh, term, weekFilter(week, resultData), function (err, re) {
 	        	callback && callback(null, re);
-//	        	console.timeEnd('process');
 	        });
 		});
 	});
@@ -243,21 +237,16 @@ function responseData (status, xh, term, data, callback) {
  * @return {[type]}     [description]
  */
 function kebiao (req, res) {
-    var ip = req.headers['x-forwarded-for'] ||
-        req.headers['x-real-ip'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
-	res.setHeader('Content-Type','application/json');
+    //var ip = req.ip;
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	var rawStuNum = req.body['stu_num'] || req.body['stuNum'];
-	var xh = rawStuNum;
-    var week = parseInt(req.body['week']) || 0;
+	var xh = req.body['stu_num'] || req.body['stuNum'],
+        week = parseInt(req.body['week']) || 0;
+
 	if(!xh) {	//NaN or parseInt截断的情况
 		responseData(-20, function (err, re) {
 			if(err)return console.log(err);
             re.nowWeek = getNowWeek();
-			return res.end(JSON.stringify(re));
+			return res.json(re);
 		});
 	}else
     kebiaoModel.findOne({stuNum: xh}, null, {sort: [{'outOfDateTimestamp': -1}]}, function(err, kbInDb){
@@ -266,16 +255,16 @@ function kebiao (req, res) {
             return responseData(-1, function (err, re) {
                 if(err)return console.log(err);
                 re.nowWeek = getNowWeek();
-                return res.end(JSON.stringify(re));
+                return res.json(re);
             });
         }
         if(!kbInDb || kbInDb.outOfDateTimestamp < new Date().getTime()){
             return kebiaoMain(xh, week, function (err, data) {
                 if(err)return console.log(err);
-                //HOCK STORAGE
+                //Mongodb STORAGE
                 (function(data){
                     if(!data.data || data.data.length == 0) return;
-                    var options = {expire: 30 * 24 * 3600 * 1000};
+                    var options = {expire: mongodbExpire};
                     data.cachedTimestamp = new Date().getTime();
                     data.outOfDateTimestamp = data.cachedTimestamp + options.expire;
                     var k = new kebiaoModel(data)
@@ -286,12 +275,7 @@ function kebiao (req, res) {
                 })(data);
                 //End storage
                 data.nowWeek = getNowWeek();
-                if(thief){
-                    return res.end(JSON.stringify(thiefHandler(data)));
-                }else{
-                    return res.end(JSON.stringify(data));
-                }
-                
+                return res.json(data);
             });
         }else{
             kbInDb = kbInDb.toObject();
@@ -304,7 +288,7 @@ function kebiao (req, res) {
                 kbInDb.data = tmpData;
             }
             kbInDb.nowWeek = getNowWeek();
-            return res.end(JSON.stringify(kbInDb));
+            return res.json(kbInDb);
 
         }
     });

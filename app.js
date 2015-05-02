@@ -21,6 +21,12 @@ app.set('view engine', 'hbs');
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* logger middleware */
+app.use(require('./logger').logger);
+
+/* redis cacher */
+app.use('/api', require('./cacher'));
+
 /* route */
 app.use('/', router);
 
@@ -30,10 +36,17 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-//app.use(errorHandler);
+app.use(function(err, req, res, next){
+    res.json({
+        status: err.status || 404,
+        info: err.info || "plugin not found"
+    });
+});
 
 //Connect MongoDB
-//mongoose.connect(settings.dsn);
+mongoose.connect(settings.dsn, function(){
+    console.log("MongoDB Connected");
+});
 
 /* environment settings */
 process.env.PORT = settings.port;
