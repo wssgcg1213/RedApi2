@@ -7,6 +7,8 @@ var express = require('express');
     router = require('./modules/router'),
     settings = require('./settings'),
     mongoose = require('mongoose'),
+    modLogger = require('./modules/logger'),
+    modCacher = require('./modules/cacher'),
     app = express();
 
 /* engine */
@@ -17,11 +19,18 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* 请求量 */
+app.use('/api', function(req, res, next){
+    var incrStatic = modLogger.incrStatic;
+    incrStatic('all', function(){
+        next();
+    });
+})
 /* logger middleware */
-app.use('/api', require('./modules/logger').logger);
+app.use('/api', modLogger.logger);
 
 /* redis cacher */
-app.use('/api', require('./modules/cacher'));
+app.use('/api', modCacher);
 
 /* route */
 app.use('/', router);
@@ -32,7 +41,7 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-app.use(require('./modules/logger').errorHandler);
+app.use(modLogger.errorHandler);
 
 //Connect MongoDB
 mongoose.connect(settings.dsn, function(){

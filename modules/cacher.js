@@ -6,7 +6,8 @@ redis cacher
  */
 var redis = require('redis'),
     client = redis.createClient(),
-    s = require('../settings');
+    s = require('../settings'),
+    incrStatic = require('./logger').incrStatic;
 
 client.on("connect", function () {
     client.flushdb();
@@ -34,7 +35,7 @@ module.exports = function(req, res, next){
     client.get(keyString, function(err, text){
         if(err){return next(err);}
         if(text){
-            //todo logger hint
+            incrStatic('redis'); //ok logger hint to mongodb
             var obj = JSON.parse(text);
             obj.redis = 'yes';
             res.json(obj);

@@ -6,8 +6,10 @@ var EventProxy = require('eventproxy'),
     modelAccess = require('../models/access.model.js'),
     modelError = require('../models/error.model.js'),
     staticModel = require('../models/static.model.js'),
+    settings = require('../settings'),
     //EventEmitter = require('events').EventEmitter,
-    ee = new EventProxy();
+    ee = new EventProxy(),
+    pliginEp = new EventProxy();
 
 console.log('logger module loaded');
 
@@ -37,7 +39,7 @@ function getStatic(type, cb){
 
 function incrStatic(type, cb){
     if(type !== 'all' && type !== 'redis'){
-        incrStatic('all'); //给总访问量也加一次
+        //incrStatic('all'); //给总访问量也加一次 多此一举
         type = "plugin-" + type;
     }
     staticModel.findOneAndUpdate({key: type}, {$inc: {
@@ -101,24 +103,90 @@ module.exports.io = function(io) {
     io.on('connection', function(socket){
         ee.on('accessLogged', function _handler(obj){
             socket.emit('accessLogged', obj);
+            getStatic('redis', function(doc){
+                if(global.redisClient){
+                    global.redisClient.dbsize(function(err, number){
+                        socket.emit('redis', {
+                            pool: number,
+                            ttl: settings.expire,
+                            week: doc.week,
+                            today: doc.today,
+                            all: doc.all
+                        });
+                    });
+                }else{
+                    socket.emit('redis', {
+                        pool: 0,
+                        ttl: settings.expire,
+                        week: doc.week,
+                        today: doc.today,
+                        all: doc.all
+                    });
+                }
+            })
+
+            getStatic('all', function(doc){
+                socket.emit('all', doc);
+            });
         });
 
         ee.on('errorLogged', function _handler(obj){
             socket.emit('errorLogged', obj);
         });
 
-        socket.emit('redis', {
-            ttl: 240,
-            pool: 1234,
-            today: 5345,
-            week: 34543,
-            all: 34543
+        getStatic('all', function(doc){
+            socket.emit('all', doc);
+        });
+
+        pliginEp.on('incr', function(obj){
+            socket.emit('plugin', obj);
+        });
+
+        var redisEp = EventProxy.create('pool', 'mongoRedisRecord', function(pool, obj){
+            socket.emit('redis', {
+                pool: pool,
+                ttl: settings.expire,
+                week: obj.week,
+                today: obj.today,
+                all: obj.all
+            });
+        });
+        getStatic('redis', function(doc){
+            redisEp.emit('mongoRedisRecord', doc);
+        })
+        if(global.redisClient){
+            global.redisClient.dbsize(function(err, number){
+                redisEp.emit('pool', number || 0);
+            });
+        }else{
+            redisEp.emit('pool', 0);
+        }
+
+        var logEp = EventProxy.create('errorLog', 'accessLog', function(eObjArr, aObjArr){
+            socket.emit('logs', {
+                accessLog: aObjArr,
+                errorLog: eObjArr
+            });
+        });
+        modelAccess.find({}, null, {limit: 30, sort: {timestamp: -1}}, function(err, docs){
+            if(err)return console.log(err);
+            logEp.emit('accessLog', docs);
+        });
+        modelError.find({}, null, {limit: 30, sort: {timestamp: -1}}, function(err, docs){
+            if(err)return console.log(err);
+            logEp.emit('errorLog', docs);
         });
     });
 };
 
 module.exports.logger = function(req, res, next) {
     var _path = req.path.split('/');
+    req.plugin = _path[_path.length - 1] || '';
+    if(req.plugin){
+        incrStatic(req.plugin, function(doc){
+            pliginEp.emit('incr', doc);
+        });
+    }
     req.logAccess = function() {
         var obj = {
                 ip: req.ip,

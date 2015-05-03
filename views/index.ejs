@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Doc</title>
+    <title>RedApi Beta2 实时监控后台</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.css"/>
     <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
 
     <div class="row" id="all">
         <h3>统计</h3>
-        今日访问量: {{today}} 本周访问量: {{week}}
+        今日请求量: {{today}} 本周请求量: {{week}}  总请求量: {{all}}
     </div>
 
     <div class="row" id="plugins">
@@ -60,7 +60,7 @@
                     path: {{path}},
                     plugin: {{plugin}},
                     requestBody: {{requestBody | json}},
-                    timestamp: {{timestamp | datetime}}
+                    时间: {{timestamp | datetime}}
                 </li>
             </ul>
             <ul class="col-md-12" id="errorLog">
@@ -68,7 +68,7 @@
                     path: {{path}},
                     plugin: {{plugin}},
                     requestBody: {{requestBody | json}},
-                    timestamp: {{timestamp | datetime}},
+                    时间: {{timestamp | datetime}},
                     message: {{message}}
                 </li>
             </ul>

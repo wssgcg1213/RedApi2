@@ -241,8 +241,7 @@ function kebiao (req, res) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	var xh = req.body['stu_num'] || req.body['stuNum'],
         week = parseInt(req.body['week']) || 0;
-
-	if(!xh) {	//NaN or parseInt截断的情况
+	if(!xh || parseInt(xh) != xh) {	//NaN or parseInt截断的情况
 		responseData(-20, function (err, re) {
 			if(err)return console.log(err);
             re.nowWeek = getNowWeek();
