@@ -2,7 +2,7 @@
 var debug = require('debug')('RedApi2');
 var app = require('../app');
 var http = require('http');
-var ioController = require('../logger').io;
+var ioController = require('../modules/logger').io;
 
 app.set('port', process.env.PORT || 3000);
 

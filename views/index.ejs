@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Doc</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css"/>
+    <!--[if lt IE 9]>
+    <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>RedApi Beta2 实时监控后台</h1>
+    </div>
+
+    <div class="row" id="all">
+        <h3>统计</h3>
+        今日访问量: {{today}} 本周访问量: {{week}}
+    </div>
+
+    <div class="row" id="plugins">
+        <h3>插件用量</h3>
+        <table class="table table-bordered">
+            <tr>
+                <th>插件</th>
+                <th>今日访问</th>
+                <th>本周访问</th>
+                <th>总访问量</th>
+            </tr>
+            <tr v-repeat="plugins">
+                <td>{{plugin}}</td>
+                <td>{{today}}</td>
+                <td>{{week}}</td>
+                <th>{{all}}</th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="row" id="redis">
+        <h3>Redis Cache</h3>
+        TTL: {{ttl}}
+        pool: {{pool}}
+        今日hint: {{today}}
+        本周hint: {{week}}
+        总hint: {{all}}
+    </div>
+
+    <div class="row" id="realTime">
+        <h3>实时</h3>
+        <a href="#accessLog">访问日志</a>
+        <a href="#errorLog">错误日志</a>
+        <div class="ovh">
+            <ul class="col-md-12" id="accessLog">
+                <li v-repeat="accessLog">ip: "127.0.0.1",
+                    path: {{path}},
+                    plugin: {{plugin}},
+                    requestBody: {{requestBody | json}},
+                    timestamp: {{timestamp | datetime}}
+                </li>
+            </ul>
+            <ul class="col-md-12" id="errorLog">
+                <li v-repeat="errorLog">ip: "127.0.0.1",
+                    path: {{path}},
+                    plugin: {{plugin}},
+                    requestBody: {{requestBody | json}},
+                    timestamp: {{timestamp | datetime}},
+                    message: {{message}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/vue.js"></script>
+<script src="/admin/socket.io.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.ovh {
+  overflow: hidden;
+  height: 400px;
+}
+.ovh #accessLog,
+.ovh #errorLog {
+  height: 400px;
+  overflow: auto;
+}

@@ -6,7 +6,7 @@ redis cacher
  */
 var redis = require('redis'),
     client = redis.createClient(),
-    s = require('./settings');
+    s = require('../settings');
 
 client.on("connect", function () {
     client.flushdb();
