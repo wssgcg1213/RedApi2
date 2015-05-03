@@ -192,7 +192,7 @@ module.exports.logger = function(req, res, next) {
                 ip: req.ip,
                 requestBody: req.body,
                 plugin: _path[_path.length - 1],
-                path: req.path,
+                path: req.path.replace(/^\/api/, ''),
                 timestamp: +new Date()
             },
             m = new modelAccess(obj);
@@ -211,7 +211,7 @@ module.exports.logger = function(req, res, next) {
                 requestBody: req.body,
                 plugin: _path[_path.length - 1],
                 message: msg,
-                path: req.path,
+                path: req.path.replace(/^\/api/, ''),
                 timestamp: +new Date()
             },
             m = new modelError(obj);

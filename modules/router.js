@@ -2,8 +2,8 @@ var express = require('express'),
     router = express.Router(),
     availables = require('../settings').availablePlugins,
     adminCtrl = require('./adminCtrl'),
-    modelStatic = require('../models/static.model'),
-    EventProxy = require('eventproxy');
+    EventProxy = require('eventproxy'),
+    getStatic = require('./logger').getStatic;
 
 router.get(['/', '/api', '/api/admin'], function(req, res) {
     res.redirect('/admin');
@@ -18,8 +18,7 @@ router.post('/adminPlugins', function(req, res, next){
     });
     var ep = EventProxy.create.apply(this, _args);
     availables.forEach(function(p){
-        modelStatic.findOne({key: "plugin-" + p}, function(err, doc){
-            if(err) return console.log(err);
+        getStatic(p, function(doc){
             ep.emit(p, {
                 plugin: p,
                 today: doc.today,
