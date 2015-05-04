@@ -23,6 +23,7 @@
     "moment": "^2.10.2",
     "mongoose": "^3.8.22",
     "morgan": "~1.0.0",
+    "redapi-plugin-kebiao": "^15.5.5",
     "redis": "^0.12.1",
     "socket.io": "^1.3.5",
     "static-favicon": "~1.0.0"
