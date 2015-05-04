@@ -1,6 +1,6 @@
 var express = require('express'),
     router = express.Router(),
-    availables = require('../settings').availablePlugins,
+    availables = require('../config.json').availablePlugins,
     adminCtrl = require('./adminCtrl'),
     EventProxy = require('eventproxy'),
     getStatic = require('./logger').getStatic;

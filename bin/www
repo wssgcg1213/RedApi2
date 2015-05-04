@@ -1,16 +1,33 @@
 #!/usr/bin/env node
+
 var debug = require('debug')('RedApi2');
-var app = require('../app');
-var http = require('http');
-var ioController = require('../modules/logger').io;
+var fs = require('fs');
+var path =  require('path');
+var createConfig = require('./createConfig');
 
-app.set('port', process.env.PORT || 3000);
+if(! fs.existsSync(path.join(process.cwd(), "config.json"))){
+    createConfig(start);
+}
+else{
+    start();
+}
 
-var _server = require('http').Server(app);
+function start(){
+    var app = require('../app');
+    var http = require('http');
+    var ioController = require('../modules/logger').io;
 
-var server = _server.listen(app.get('port'), function() {
-  debug('Express server listening on port ' + server.address().port);
-});
 
-var io = require('socket.io')(server, {path: "/admin"});
-ioController(io);
+    app.set('port', process.env.PORT || 3000);
+
+    var _server = require('http').Server(app);
+
+    var server = _server.listen(app.get('port'), function() {
+        debug('Express server listening on port ' + server.address().port);
+    });
+
+    var io = require('socket.io')(server, {path: "/admin"});
+    ioController(io);
+
+}
+
