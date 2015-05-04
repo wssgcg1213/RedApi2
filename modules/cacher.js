@@ -6,7 +6,7 @@ redis cacher
  */
 var redis = require('redis'),
     client = redis.createClient(),
-    s = require('../settings'),
+    s = require('../config.json'),
     incrStatic = require('./logger').incrStatic;
 
 client.on("connect", function () {
