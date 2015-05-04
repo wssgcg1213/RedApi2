@@ -75,8 +75,13 @@ function kebiaoMain (xh, week, callback) {
 			var gbk_to_utf8_iconv = new Iconv('GBK', 'UTF-8//TRANSLIT//IGNORE');
 	        var utf8_buffer = gbk_to_utf8_iconv.convert(buffer);
 	        var doc = utf8_buffer.toString().replace(/&nbsp;/g, '');
+
+            var document = jsdom(doc);
+            var window = document.parentWindow;
+            var $ = require('jquery')(window);
+
 	        var stuKebiao = [[],[],[],[],[],[],[]];
-	        var tbs = $(doc).find('table');
+	        var tbs = $('table');
 	        var term; //学期
 	        try{
 	        	term = $(doc)['5']._childNodes['0'].__nodeValue.match(/\[(.*)\]/)[1] || defaultTerm;
