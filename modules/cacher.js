@@ -8,19 +8,19 @@ var redis = require('redis'),
     client = redis.createClient(),
     s = require('../config.json'),
     incrStatic = require('./logger').incrStatic;
-
-client.on("connect", function () {
-    client.flushdb();
-    console.log("Redis Connected & FlushedDB");
-});
-client.on("error", function (err) {
-    console.log("Redis Error " + err);
-});
-
-/**
- * 暴露到全局方便使用
- */
-global.redisClient = client;
+    
+//client.on("connect", function () {
+//    client.flushdb();
+//    console.log("Redis Connected & FlushedDB");
+//});
+//client.on("error", function (err) {
+//    console.log("Redis Error " + err);
+//});
+//
+///**
+// * 暴露到全局方便使用
+// */
+//global.redisClient = client;
 
 function generateKeyString(path, obj) {
     var arr = [];

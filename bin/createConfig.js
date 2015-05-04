@@ -25,9 +25,9 @@ module.exports = function(callback){
             rl.question('what is the expire data of redis server(240)', function(time) {
 
                 time = time || 240;
-                rl.question("which plugins do you want to use?(Example: kebiao jwNewlist)", function(plugins){
+                rl.question("which plugins do you want to use?(Example: kebiao jwNewsList)", function(plugins){
 
-                    plugins = plugins || "kebiao jwNewlist";
+                    plugins = plugins || "kebiao jwNewsList";
 
                     var config = {
                         port : port,
