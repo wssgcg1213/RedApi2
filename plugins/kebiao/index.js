@@ -8,8 +8,8 @@
 // 			-20: 学号输入错误
 // 
 //
-var jsdom = require('jsdom');
-var $ = require('jQuery');
+var jsdom = require('jsdom').jsdom;
+//var $ = require('jquery')(require("jsdom").jsdom().parentWindow);
 var http = require('http');
 var Iconv = require('iconv').Iconv;
 var kebiaoModel = require('./model');
@@ -74,14 +74,20 @@ function kebiaoMain (xh, week, callback) {
 			var gbk_to_utf8_iconv = new Iconv('GBK', 'UTF-8//TRANSLIT//IGNORE');
 	        var utf8_buffer = gbk_to_utf8_iconv.convert(buffer);
 	        var doc = utf8_buffer.toString().replace(/&nbsp;/g, '');
+
+            var document = jsdom(doc);
+            var window = document.parentWindow;
+            var $ = require('jquery')(window);
+
 	        var stuKebiao = [[],[],[],[],[],[],[]];
-	        var tbs = $(doc).find('table');
+	        var tbs = $('table');
 	        var term; //学期
 	        try{
 	        	term = $(doc)['5']._childNodes['0'].__nodeValue.match(/\[(.*)\]/)[1] || defaultTerm;
 	        }catch(e){
 	        	term = defaultTerm;
 	        }
+
 	        /* tbNormal 是普通课表 */
 	        var tbNormal = $(tbs[0]);
 	        tbNormal.find('tr').each(function (ntr, _tr) {
@@ -92,11 +98,12 @@ function kebiaoMain (xh, week, callback) {
 	        		stuKebiao[ntd - 1].push(item_element);
 	        	});
 	        });
-	        
+
 	        try{
 	        	for(var day = 0; day <= 6; day ++) {
                     for (var course = 0; course <= 5; course++) {
                         var cache;
+                        //console.log(stuKebiao[day][course]);
                         stuKebiao[day][course].forEach(function (self, n){
                             if(n % 2){
                                 cache.period = judgePeriod(self);

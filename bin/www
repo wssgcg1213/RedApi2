@@ -15,8 +15,7 @@ else{
 function start(){
     var app = require('../app');
     var http = require('http');
-    var ioController = require('../modules/logger').io;
-
+    var ioController = require('../common/io').io;
 
     app.set('port', process.env.PORT || 3000);
 
