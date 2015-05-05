@@ -21,6 +21,7 @@ var router = express.Router();
 
 var method = kebiao.type;
 router[method]('/api/' + 'kebiao', kebiao);
+router.post('/api/jwNewsList', require('redapi-plugin-jwnewslist'));
 
 router.get(['/', '/api', '/api/admin'], function(req, res) {
     res.redirect('/admin');
