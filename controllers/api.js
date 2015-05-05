@@ -9,7 +9,6 @@ var getStatic = require('../common/static').getStatic,
     adminControllers;
 
 
-
 adminControllers = {
     index : function(req, res){
         return res.render('index', {

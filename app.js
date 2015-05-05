@@ -6,6 +6,7 @@ var express = require('express');
     bodyParser = require('body-parser'),
     router = require('./routers'),
     settings = require('./config.json'),
+    pluginManager = require('./common/pluginManager'),
     app = express();
 
 /* engine */
@@ -16,10 +17,15 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 /* route */
 app.use(router.logger);
 app.use(router.cache);
 app.use(router.api);
+
+/* plugin */
+
+app.use(pluginManager);
 
 ///* error handler */
 app.use(function(req, res, next) {
