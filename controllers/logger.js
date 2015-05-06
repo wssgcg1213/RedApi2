@@ -66,12 +66,10 @@ loggerController = {
             }
             return _json.call(res, obj);
         };
-        console.log('logger');
         next();
     },
     increase : function(req, res, next) {
         incrStatic('all', function(){
-            console.log('increase');
             next();
         });
     }

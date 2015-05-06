@@ -41,7 +41,4 @@ app.use(function(err, req, res, next){
     });
 });
 
-/* environment settings */
-process.env.PORT = settings.port;
-
 module.exports = app;

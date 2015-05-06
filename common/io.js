@@ -76,7 +76,6 @@ exports.io = function(io) {
         }
 
         var logEp = EventProxy.create('errorLog', 'accessLog', function(eObjArr, aObjArr){
-            console.log('finished');
             socket.emit('logs', {
                 accessLog: aObjArr,
                 errorLog: eObjArr
