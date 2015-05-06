@@ -1,0 +1,13 @@
+{
+  "name": "reqapi-plugin-robot",
+  "version": "1.0.0",
+  "description": "redapi robot plugin",
+  "main" : "index.js",
+  "dependencies": {
+    "phantom": "^0.7.2",
+    "socket.io": "^1.3.5"
+  },
+  "keywords" : ["plugin", "robot"],
+  "author" : ["Ling", "Andy"],
+  "license" : "MIT"
+}
