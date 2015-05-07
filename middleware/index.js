@@ -66,6 +66,7 @@ MiddleWareManager.prototype.setup = function(){
     });
 
     _.each(_this.middlewares, function(middleware){
+        console.log("loading middleware: ", middleware);
         server.use(require(middleware));
     });
 };
