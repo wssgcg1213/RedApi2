@@ -7,6 +7,7 @@ var express = require('express');
     router = require('./routers'),
     settings = require('./config.json'),
     pluginManager = require('./common/pluginManager'),
+    middleWareManager = require('./middleware'),
     app = express();
 
 /* engine */
@@ -17,6 +18,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// custom middleware
+middleWareManager(app);
 
 /* route */
 app.use(router.logger);
@@ -40,8 +43,5 @@ app.use(function(err, req, res, next){
         info: err.info || "plugin and method not match"
     });
 });
-
-/* environment settings */
-process.env.PORT = settings.port;
 
 module.exports = app;
