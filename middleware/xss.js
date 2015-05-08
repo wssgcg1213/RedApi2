@@ -11,7 +11,7 @@ function xssFilter(req, res, next) {
     if(req.method && /get/i.test(req.method)){
         req.query = JSON.parse(xss(JSON.stringify(req.query)));
     } else if(/post/i.test(req.method)) {
-        req.body = JSON.parse(xss(JSON.stringify(req.query)));
+        req.body = JSON.parse(xss(JSON.stringify(req.body)));
     }
 
     next();

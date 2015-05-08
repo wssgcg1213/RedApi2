@@ -17,7 +17,6 @@ mongoose.connect(config.dsn, function(err){
 require('./access.model');
 require('./error.model');
 require('./static.model');
-
 exports.Access = mongoose.model('access');
 exports.Error = mongoose.model('error');
 exports.Static = mongoose.model('static');
