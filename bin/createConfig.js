@@ -30,7 +30,7 @@ module.exports = function(callback){
                     plugins = plugins || "kebiao jwNewsList";
 
                     var config = {
-                        port : port,
+                        listen : port,
                         dsn : dbPath,
                         expire : time,
                         availablePlugins : plugins.split(' ')

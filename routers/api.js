@@ -9,14 +9,14 @@ var api = require('../controllers/api'),
 
 var router = express.Router();
 
-router.get(['/', '/api', '/api/admin'], function(req, res) {
-    res.redirect('/admin');
-});
+//router.get(['/', '/api', '/api/admin'], function(req, res) {
+//    res.redirect('admin');
+//});
 
-router.post('/test', function(req, res){
-    console.log(req.files);
-    res.end('123');
-});
+//router.post('/test', function(req, res){
+//    console.log(req.files);
+//    res.end('123');
+//});
 
 router.get('/admin', api.index);
 router.post('/adminPlugins', api.adminPlugins);

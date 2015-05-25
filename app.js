@@ -11,12 +11,15 @@ var express = require('express');
     _ = require('lodash'),
     app = express();
 
+var __root = '/redapi2';
+
 /* engine */
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 /* midddlewares */
-app.use(bodyParser.urlencoded());
+app.use(__root, bodyParser.urlencoded());
+app.use(__root, express.static(path.join(__dirname, 'public')));
 
 /*
     cache the static directory path, use black to split if have more.
@@ -26,16 +29,16 @@ _.each(app.get('static').split(' '), function(staticPath){
     app.use(express.static(path.join(__dirname, staticPath)));
 });
 // custom middleware
-middleWareManager(app);
+//middleWareManager(app);
 
 /* route */
-app.use(router.logger);
-app.use(router.cache);
-app.use(router.api);
+app.use(__root, router.logger);
+app.use(__root, router.cache);
+app.use(__root, router.api);
 
 /* plugin */
 
-app.use(pluginManager);
+app.use(__root, pluginManager);
 
 ///* error handler */
 app.use(function(req, res, next) {
