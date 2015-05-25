@@ -22,7 +22,7 @@ loggerController = {
         }
         req.logAccess = function() {
             var obj = {
-                    ip: req.ip,
+                    ip: req.headers['x-real-ip'],
                     requestBody: req.body,
                     plugin: _path[_path.length - 1],
                     path: req.path.replace(/^\/api/, ''),
@@ -40,7 +40,7 @@ loggerController = {
 
         req.logError = function(msg) {
             var obj = {
-                    ip: req.ip,
+                    ip: req.headers['x-real-ip'],
                     requestBody: req.body,
                     plugin: _path[_path.length - 1],
                     message: msg,

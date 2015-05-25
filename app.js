@@ -7,11 +7,10 @@ var express = require('express');
     router = require('./routers'),
     settings = require('./config.json'),
     pluginManager = require('./common/pluginManager'),
-    middleWareManager = require('./middleware'),
     _ = require('lodash'),
     app = express();
 
-var __root = '/redapi2';
+var __root = settings.root;
 
 /* engine */
 app.set('views', path.join(__dirname, 'views'));
@@ -19,17 +18,14 @@ app.set('view engine', 'ejs');
 
 /* midddlewares */
 app.use(__root, bodyParser.urlencoded());
-app.use(__root, express.static(path.join(__dirname, 'public')));
 
 /*
     cache the static directory path, use black to split if have more.
  */
 app.set('static', 'public');
 _.each(app.get('static').split(' '), function(staticPath){
-    app.use(express.static(path.join(__dirname, staticPath)));
+    app.use(__root, express.static(path.join(__dirname, staticPath)));
 });
-// custom middleware
-//middleWareManager(app);
 
 /* route */
 app.use(__root, router.logger);

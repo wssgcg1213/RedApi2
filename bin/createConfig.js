@@ -29,20 +29,23 @@ module.exports = function(callback){
 
                     plugins = plugins || "kebiao jwNewsList";
 
-                    var config = {
-                        listen : port,
-                        dsn : dbPath,
-                        expire : time,
-                        availablePlugins : plugins.split(' ')
-                    };
+                    rl.question("where is your root path? (eg: '/redapi2', default to '')", function(root){
+                        var config = {
+                            listen : port,
+                            dsn : dbPath,
+                            expire : time,
+                            availablePlugins : plugins.split(' '),
+                            root: root || ''
+                        };
 
-                    fs.writeFileSync(path.join(rootDirectory, 'config.json'), pretty(config));
+                        fs.writeFileSync(path.join(rootDirectory, 'config.json'), pretty(config));
 
-                    console.log("config.json has been prepared.\n");
-                    console.log(pretty(config));
+                        console.log("config.json has been prepared.\n");
+                        console.log(pretty(config));
 
-                    rl.close();
-                    callback();
+                        rl.close();
+                        callback();
+                    });
                 });
             });
         });

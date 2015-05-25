@@ -21,7 +21,7 @@ Date.prototype.format =function(format) {
 }
 
 //!function(window, document){
-    var socket = io(location.origin, { path : "/admin" });
+    var socket = io(location.origin, { path : "/redapi2/admin" });
 
     Vue.filter('datetime', function(ts){
         return new Date(ts).format('yyyy-MM-dd hh:mm:ss');
@@ -39,7 +39,7 @@ Date.prototype.format =function(format) {
         }
     });
 
-    $.ajax('/adminPlugins', {
+    $.ajax('/redapi2/adminPlugins', {
         method: "POST",
         success: function(docs){
             if(Object.prototype.toString.call(docs) === '[object Array]'){

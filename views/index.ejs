@@ -56,7 +56,7 @@
         <a href="#errorLog">错误日志</a>
         <div class="ovh">
             <ul class="col-md-12" id="accessLog">
-                <li v-repeat="accessLog">ip: "127.0.0.1",
+                <li v-repeat="accessLog">ip: {{ip}},
                     path: {{path}},
                     plugin: {{plugin}},
                     requestBody: {{requestBody | json}},
@@ -64,7 +64,7 @@
                 </li>
             </ul>
             <ul class="col-md-12" id="errorLog">
-                <li v-repeat="errorLog">ip: "127.0.0.1",
+                <li v-repeat="errorLog">ip: {{ip}},
                     path: {{path}},
                     plugin: {{plugin}},
                     requestBody: {{requestBody | json}},
@@ -78,7 +78,7 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/vue.js"></script>
-<script src="/admin/socket.io.js"></script>
+<script src="js/socket.io.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
