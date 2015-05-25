@@ -24,7 +24,7 @@ app.use(__root, bodyParser.urlencoded());
  */
 app.set('static', 'public');
 _.each(app.get('static').split(' '), function(staticPath){
-    app.use(express.static(path.join(__dirname, staticPath)));
+    app.use(__root, express.static(path.join(__dirname, staticPath)));
 });
 
 /* route */
