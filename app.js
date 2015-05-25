@@ -10,7 +10,7 @@ var express = require('express');
     _ = require('lodash'),
     app = express();
 
-var __root = '/redapi2';
+var __root = settings.root;
 
 /* engine */
 app.set('views', path.join(__dirname, 'views'));
