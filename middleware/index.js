@@ -17,6 +17,15 @@ var path = require('path'),
     debug = require('debug')('index.js'),
     setupMiddleware;
 
+
+function deleteFromArray(ele, arr){
+    for(var i = 0; i < arr.length; i ++){
+        if(arr[i] === ele){
+            arr.splice(i, 1);
+        }
+    }
+}
+
 function MiddleWareManager(app){
     this._server = app;
     this.middlewares = [];
@@ -57,17 +66,19 @@ MiddleWareManager.prototype.setup = function(){
 
     var loadList = _.clone(_this.middlewares, true);
 
-    _.each(loadList, function(middleware){
-        var middlewareName = _.last(middleware.split('/')).slice(0, -3);
-        var middleIndex = _this.blackList.indexOf(middlewareName);
-        if(middleIndex >= 0){
-            _this.middlewares.splice(middleIndex, 1);
-        }
+    _.each(_this.blackList, function(black){
+        deleteFromArray(path.join(DirectoryRoot, [black, '.js'].join('')), _this.middlewares);
     });
 
     _.each(_this.middlewares, function(middleware){
         console.log("loading middleware: ", middleware);
-        server.use(require(middleware));
+        var middlewareFile = require(middleware);
+        if(middlewareFile.param){
+            server.use(middlewareFile.call(server, middlewareFile.param));
+        }
+        else{
+            server.use(middlewareFile);
+        }
     });
 };
 
