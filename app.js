@@ -8,6 +8,7 @@ var express = require('express');
     settings = require('./config.json'),
     pluginManager = require('./common/pluginManager'),
     middleWareManager = require('./middleware'),
+    _ = require('lodash'),
     app = express();
 
 var __root = '/redapi2';
@@ -20,6 +21,13 @@ app.set('view engine', 'ejs');
 app.use(__root, bodyParser.urlencoded());
 app.use(__root, express.static(path.join(__dirname, 'public')));
 
+/*
+    cache the static directory path, use black to split if have more.
+ */
+app.set('static', 'public');
+_.each(app.get('static').split(' '), function(staticPath){
+    app.use(express.static(path.join(__dirname, staticPath)));
+});
 // custom middleware
 //middleWareManager(app);
 
