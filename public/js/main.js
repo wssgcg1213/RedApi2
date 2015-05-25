@@ -39,7 +39,7 @@ Date.prototype.format =function(format) {
         }
     });
 
-    $.ajax('/adminPlugins', {
+    $.ajax('/redapi2/adminPlugins', {
         method: "POST",
         success: function(docs){
             if(Object.prototype.toString.call(docs) === '[object Array]'){
