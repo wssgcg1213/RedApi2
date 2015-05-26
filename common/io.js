@@ -13,7 +13,7 @@ var modelAccess = require('../models').Access,
 
 
 exports.io = function(io) {
-    io.on('connection', function(socket){
+    ee.on('wrapper', function(socket){
         ee.on('accessLogged', function _handler(obj){
             socket.emit('accessLogged', obj);
             getStatic('redis', function(doc){
@@ -46,6 +46,12 @@ exports.io = function(io) {
         ee.on('errorLogged', function _handler(obj){
             socket.emit('errorLogged', obj);
         });
+    })
+
+    io.on('connection', function(socket){
+
+        ee.emit('wrapper', socket);
+
 
         getStatic('all', function(doc){
             socket.emit('all', doc);
